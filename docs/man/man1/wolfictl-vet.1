@@ -1,0 +1,111 @@
+.TH "WOLFICTL-VET" "1" "Jul 2025" "wolfictl" "wolfictl"
+.nh
+.ad l
+.SH NAME
+wolfictl\-vet \- Run vetting pipeline for melange or apko manifests
+.SH SYNOPSIS
+.PP
+\fBwolfictl vet [flags] [manifest_path]\fP
+.SH DESCRIPTION
+.PP
+Run a comprehensive vetting pipeline for melange or apko manifests.
+
+.PP
+This command performs a series of checks on the given manifest:
+.RS 4
+1. Identifies the manifest type (melange or apko)
+.br
+2. Runs format check (wolfictl lint yam)
+.br
+3. Runs lint check (wolfictl lint)
+.br
+4. Runs update check
+.RE
+
+.PP
+Optionally, it can also:
+.PP
+For melange manifests:
+.RS 4
+* Generate melange keys if needed
+.br
+* Check if packages exist in the Wolfi repo
+.br
+* Run melange build
+.br
+* Export APK to temp directory
+.br
+* Run security scans with Grype/Trivy
+.RE
+
+.PP
+For apko manifests:
+.RS 4
+* Check if packages exist in the Wolfi repo
+.br
+* Run terraform fmt
+.br
+* Run apko build
+.br
+* Run security scans with Grype/Trivy
+.RE
+
+.SH OPTIONS
+.PP
+\fB\-\-apko\-config\fP=""
+.RS 4
+Path to apko configuration file
+.RE
+
+.PP
+\fB\-h\fP, \fB\-\-help\fP[=false]
+.RS 4
+help for vet
+.RE
+
+.PP
+\fB\-\-melange\-key\-dir\fP="$HOME/.melange"
+.RS 4
+Directory for melange keys
+.RE
+
+.PP
+\fB\-\-run\-build\fP[=false]
+.RS 4
+Run optional build pipeline and security scans
+.RE
+
+.PP
+\fB\-\-scanner\fP="grype"
+.RS 4
+Security scanner to use (grype or trivy)
+.RE
+
+.SH EXAMPLES
+.PP
+# Vet a melange manifest (basic checks only)
+.RS 4
+\fBwolfictl vet my-melange-manifest.yaml\fP
+.RE
+
+.PP
+# Vet a melange manifest and run build pipeline with security scanning
+.RS 4
+\fBwolfictl vet my-melange-manifest.yaml --run-build\fP
+.RE
+
+.PP
+# Vet an apko manifest with Trivy scanner
+.RS 4
+\fBwolfictl vet my-apko-manifest.yaml --run-build --scanner trivy\fP
+.RE
+
+.PP
+# Using a custom key directory and apko config
+.RS 4
+\fBwolfictl vet --run-build --melange-key-dir ~/.cache/melange/keys --apko-config apko.build.yaml manifests/my-image.apko.yaml\fP
+.RE
+
+.SH SEE ALSO
+.PP
+\fBwolfictl(1)\fP, \fBwolfictl-lint(1)\fP, \fBwolfictl-lint-yam(1)\fP
