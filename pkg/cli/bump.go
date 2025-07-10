@@ -43,7 +43,6 @@ The command assumes it is being run from the top of the wolfi/os
 repository. To look for files in another location use the --repo flag.
 You can use --dry-run to see which versions will be bumped without
 modifying anything in the filesystem.
-
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
@@ -118,12 +117,19 @@ func bumpEpoch(ctx context.Context, opts bumpOptions, path string) error {
 	old := fmt.Sprintf(epochPattern, cfg.Package.Epoch)
 	for scanner.Scan() {
 		line := scanner.Text()
-		nocomment, _, _ := strings.Cut(line, "#")
-		if strings.TrimSpace(nocomment) == old {
+		// Extract just the key-value part before any comments
+		lineNoComment := line
+		if commentIdx := strings.Index(line, "#"); commentIdx >= 0 {
+			lineNoComment = line[:commentIdx]
+		}
+		
+		// Check if this is the epoch line by comparing the trimmed line without comments
+		if strings.TrimSpace(lineNoComment) == old {
 			found = true
-			newFile = append(
-				newFile, strings.ReplaceAll(line, old, fmt.Sprintf(epochPattern, cfg.Package.Epoch+1)),
-			)
+			// Update with the new epoch value but preserve any comments
+			newEpoch := fmt.Sprintf(epochPattern, cfg.Package.Epoch+1)
+			newLine := strings.Replace(line, old, newEpoch, 1)
+			newFile = append(newFile, newLine)
 		} else {
 			newFile = append(newFile, line)
 		}

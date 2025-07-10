@@ -1,0 +1,5 @@
+package:
+  name: test-with-comment
+  version: 1.0.0
+  epoch: 2 # This is a comment that breaks the bump command
+  description: "Test package with comment"

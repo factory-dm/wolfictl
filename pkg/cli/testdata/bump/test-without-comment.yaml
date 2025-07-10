@@ -1,0 +1,5 @@
+package:
+  name: test-without-comment
+  version: 1.0.0
+  epoch: 2
+  description: "Test package without comment"
